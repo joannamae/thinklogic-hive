@@ -1,0 +1,139 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="assets/images/hive-ico.png"/>
+    <title>HIVE</title>
+
+    <!-- Log In Page -->
+    <link href="assets/login/css/style.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="assets/vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="assets/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="assets/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="assets/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- jQuery custom content scroller -->
+    <link href="assets/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" rel="stylesheet"/>
+    <!-- bootstrap-progressbar -->
+    <link href="assets/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="assets/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="assets/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="assets/build/css/custom.css" rel="stylesheet">
+    <link href="assets/build/css/joanna.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/build/css/print.css" media="print" />
+
+    <script type="text/javascript" src="assets/build/js/print.js"></script>
+
+    <script type="text/javascript">
+        function printContent(el){
+            var restorepage = document.body.innerHTML;
+            var printcontent = document.getElementById(el).innerHTML;
+           
+
+            document.body.innerHTML = printcontent;
+            window.print();
+            document.body.innerHTML = restorepage;
+            document.location.href = window.location.href; 
+        }
+        
+        $(document).ready(function() {
+            $('#example').dataTable();
+        } );
+
+        
+        function startTime() {
+            
+            /*
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            document.getElementById('time').innerHTML =
+            h + ":" + m + ":" + s;
+            var t = setTimeout(startTime, 500);
+            var timezone = "<?php date_default_timezone_set('Asia/Singapore') ?>";
+            var h = "<?php echo $h = date('H')?>";
+            var m = "<?php echo $m = date('i')?>";
+            var s = "<?php echo $s = date('s')?>";
+            m = checkTime(m);
+            s = checkTime(s);
+            document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
+            var t = setTimeout(startTime, 500);
+            */
+        }
+
+        function chart() {
+            var ctx = document.getElementById("chart-area").getContext("2d");
+            window.myDoughnut = new Chart(ctx, config);
+        }
+
+        function checkTime(i) {
+            if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+            return i;
+        }
+
+        function printData()
+        {
+            var divToPrint=document.getElementById("print_payslip");
+            var htmlToPrint = '' +
+                '<style type="text/css">' +
+                '.table-bordered {' +
+                'border: 1px solid #ddd;' +
+                '}' +
+                '.table {' +
+                'width: 100%;' +
+                'max-width: 100%;' +
+                'margin-bottom: 20px;' +
+                '}' +
+                'table {' +
+                'border-spacing: 0;' +
+                'border-collapse: collapse;' +
+                '}' +
+                '.table-bordered>tbody>tr>th, .table-bordered>tbody>tr>td {' +
+                'border: 1px solid #ddd;' +
+                '}' +
+                '.table>tbody>tr>td, .table>tbody>tr>th, {' +
+                'padding: 8px;' +
+                'line-height: 1.42857143;' +
+                'vertical-align: top;' +
+                '}' +
+                'td, th {' +
+                'text-align: left;' +
+                'display: table-cell;' +
+                '}' +
+                'th {' +
+                'font-weight: bold;' +
+                '}' +
+                'body {' +
+                'color: #73879C;' +
+                'font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;' +
+                'font-size: 8px;' +
+                '}' +
+                '</style>';
+
+
+            htmlToPrint += divToPrint.outerHTML;
+            newWin = window.open("");
+            newWin.document.write(htmlToPrint);
+            newWin.print();
+            newWin.close();
+        }
+
+    </script>
+</head>

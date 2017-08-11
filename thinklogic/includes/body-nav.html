@@ -1,0 +1,772 @@
+<!-- Body Navigations -->	
+<div class="col-md-3 left_col menu_fixed">
+  <div class="left_col scroll-view">
+    <div class="navbar nav_title" style="border: 0;">
+      <center>
+        <br>
+        <a href="dashboard.php"><img src="assets/images/hive.png" height="60px"></a>
+      </center>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="clearfix"></div>
+
+    <!-- menu profile quick info -->
+    <div class="profile clearfix">
+      <br>
+      <div class="profile_pic">
+        <img src="<?php echo $_SESSION['employee_picture']?>" alt="" class="img-circle profile_img">
+      </div>
+      <div class="profile_info">
+        <span>Welcome,</span>
+        <h2><?php echo $_SESSION['first_name'] . " " . $_SESSION['last_name'] ?></h2>
+      </div>
+    </div>
+    <!-- /menu profile quick info -->
+
+    <br />
+
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+      <div class="menu_section">
+        <ul class="nav side-menu">
+          <li><a href="dashboard.php"><i class="fa fa-home"></i> Dashboard</a></li>
+          <?php 
+            if($_SESSION['access_id']=='2' OR $_SESSION['access_id']=='3' OR $_SESSION['access_id']=='4')
+            {
+            ?>
+              <li><a href="inbox.php"><i class="fa fa-inbox"></i> Inbox</a></li>
+            <?php
+            }
+          ?>
+          <li><a href="tasks.php"><i class="fa fa-tasks"></i> Tasks</a></li>
+          <li><a><i class="fa fa-calendar"></i> Leave <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="leaveapplication.php">Leave Application</a></li>
+              <li><a href="leavetracking.php">Leave Tracking</a></li>
+            </ul>
+          </li>
+          <li><a><i class="fa fa-check"></i> ResQue <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="ticketrequest.php">Ticket Request</a></li>
+              <li><a href="tickettracking.php">Ticket Tracking</a></li>
+            </ul>
+          </li>
+          <li><a href="logbook.php"><i class="fa fa-clock-o"></i> Logbook</a></li>
+          <li><a><i class="fa fa-newspaper-o"></i> Payroll <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="viewpayslips.php">View Payslips</a></li>
+              <li><a href="computepayroll.php">Compute Estimated Payroll</a></li>
+              <?php 
+              if($_SESSION['access_type']=='Supervisor' AND $_SESSION['team_name']=='Admin' OR $_SESSION['access_type']=='Administrator'){
+              ?>
+              <li><a href="printpayslips.php">Print Payslip</a></li>
+              <li><a href="payroll.php">Payroll</a></li>
+              <?php
+              }
+              ?>
+            </ul>
+          </li>
+          <?php
+            if($_SESSION['access_type']=='Manager' || $_SESSION['access_type']=='Administrator' || $_SESSION['employee_id']=='9'){
+          ?>
+          <li><a><i class="fa fa-desktop"></i> Administration <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="employees.php">Manage Employees</a></li>
+              <li><a href="teams.php">Manage Teams</a></li>
+              <li><a href="shiftschedule.php">Manage Shifts</a></li>
+            </ul>
+          </li>
+          <?php
+            }
+            if($_SESSION['access_type']=='Administrator'){
+          ?>
+          <li><a><i class="fa fa-gear"></i> System Parameters <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="accessregistry.php">Access Registry</a></li>
+            </ul>
+          </li>
+          <?php
+            }
+          ?>
+          <?php if($_SESSION['access_type']=='Administrator' || $_SESSION['access_type']=='Manager' || $_SESSION['access_type']=='Supervisor' && $_SESSION['team_name']=='Admin'){
+          ?>
+          <li><a href="#"><i class="fa fa-area-chart"></i> Reports <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="logtracking.php">Log Tracking</a></li>
+            </ul>
+          </li>
+          <?php
+          }
+          ?>
+        </ul>
+      </div>
+    </div>
+    <!-- /sidebar menu -->
+
+    <!-- /menu footer buttons -->
+    <div class="sidebar-footer">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-6">
+            <div class="pull-right">
+              <form method="POST">
+                  <input style="display:none" value="<?php echo date("h:i:sa"); ?>" name="logout_stamp" />
+                  <input style="display:none" value="<?php echo $_SESSION['log_id']; ?>" name="log_id" />
+                  <input style="display:none" type="submit" value="Restroom" class="btn btn-info btn-md" name="" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /menu footer buttons -->            
+  </div>
+</div>
+
+
+<?php
+  $employee_id = $_SESSION['employee_id'];
+  $getQuery = $db->prepare("SELECT * FROM bio_break WHERE employee_id='$employee_id'");
+  $getQuery->execute();
+  $row1 = $getQuery->fetch(PDO::FETCH_ASSOC);
+  $break_remaining = $row1['break_remaining'];
+?>
+
+<!-- top navigation -->
+<div class="top_nav">
+  <div class="nav_menu">
+    <nav>
+      <!--
+      <div class="nav toggle">
+        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+      </div>
+      -->
+      <ul class="nav navbar-nav navbar-left">
+        <li class="">
+          <a>
+          <?php date_default_timezone_set('Asia/Singapore'); echo date("F j, Y"); ?>
+          </a>
+        </li> 
+        <li class="">
+          <a>
+          <div id="time"></div>
+          </a>
+        </li> 
+      </ul>
+      <ul class="nav navbar-nav navbar-right">  
+        <li class="">
+          <a href="#" data-toggle="modal" data-target=".bs-example-modal-sm">
+            <span class="glyphicon glyphicon-log-out"></span>
+          </a>
+          <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span>
+                  </button>
+                  <h4 class="modal-title" id="myModalLabel2">Log-Out</h4>
+                </div>
+                <div class="modal-body">
+                  <center><p>Are you sure you want to log-out?</p></center>
+                </div>
+                <div class="modal-footer">
+                  <center>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a href="logout.php" class="btn btn-primary">Log-Out</a>
+                  </center>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </li> 
+        <li class="">
+          <a href="profile.php" class="user-profile">
+            <img src="<?php echo $_SESSION['employee_picture']?>" alt=""><?php echo $_SESSION['first_name'] . " " . $_SESSION['last_name'] ?>
+          </a>
+        </li>
+        <li role="presentation" class="dropdown">
+          <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-envelope-o"></i>
+            <span class="badge bg-green">
+              <?php
+                include("notification-counter.php");
+              ?>
+            </span>
+          </a>
+          <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+            <?php
+              include("notifications.php");
+            ?>
+          </ul>
+        </li>
+        <?php
+          $log_id = $_SESSION['log_id'];
+          $getLog = $db->prepare("SELECT * FROM logbook WHERE log_id = '$log_id'");
+          $getLog->execute();
+          $rowLog = $getLog->fetch(PDO::FETCH_ASSOC);
+        ?>
+        <li class="dropdown">
+          <a href="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Break List
+            <span class="caret"></span>
+          </a> 
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="left:0px">
+            <?php if($rowLog['break1_start'] != NULL){?><li class="disabled"><a href="#">1st Break Consumed</a></li><?php } else{ ?>
+            <li>
+              <a href="#" data-toggle="modal" data-target="#modalMorningBreak" data-backdrop="static" data-keyboard="false">Morning Break</a>
+            </li><?php } ?>
+
+            <?php if($rowLog['out1'] != 0){?><li class="disabled"><a href="#">1-Hr Break Consumed</a></li><?php } else{ ?>
+            <li>
+              <a href="#" data-toggle="modal" data-target="#modalLunchBreak" data-backdrop="static" data-keyboard="false">Lunch Break</a>
+            </li><?php } ?>
+
+            <?php if($rowLog['break2_start'] != NULL){?><li class="disabled"><a href="#">2nd Break Consumed</a></li><?php }else{ ?>
+            <li>
+              <a href="#" data-toggle="modal" data-target="#modalAfternoonBreak" data-backdrop="static" data-keyboard="false">Afternoon Break</a>
+            </li><?php } ?>
+            <?php if($break_remaining > 0){ ?>
+            <li>
+              <a href="#" data-toggle="modal" data-target="#modalRestBreak" data-backdrop="static" data-keyboard="false">Bio Break</a>
+            </li>
+            <?php }else{ ?>
+            <li class="disabled"><a href="#">Bio Break Consumed</a></li>
+            <?php }?>
+          </ul>
+        </li> 
+      </ul>
+    </nav>
+  </div>
+</div>
+<!-- /top navigation -->
+
+<!-- Restroom Break -->
+<div class="modal fade" tabindex="-1" id="modalRestBreak" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">Bio Break</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <center>
+              <h4>Remaining Break: <?php echo (int)($break_remaining/60).':'.($break_remaining%60) ?></h4>
+              <br>
+              <h3><label id="minutes1">00</label>:<label id="seconds1">00</label></h3>
+            </center>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-md-12">
+              <div class="col-md-6">
+                <div class="pull-right">
+                  <?php 
+                    if($break_remaining > 0){ ?>
+                      <button class="btn btn-success" id="btnDisable" onclick="startCount()">Start Break</button>
+                    <?php }else{ ?>
+                      <button class="btn btn-success" id="btnDisable" disabled onclick="startCount()">Start Break</button>
+                  <?php }?>                    
+                </div>
+              </div><div></div>
+              <div class="col-md-6">
+                <div class="pull-left">
+                  <?php
+                    if(isset($_POST['break'])){
+                      $sec = $_POST['sec'];
+                      $remainSec = $break_remaining - $sec;
+                      
+
+                      $stmt = $db->prepare("UPDATE bio_break SET break_remaining= ? WHERE employee_id ='$employee_id'");
+                      $stmt->bindParam(1, $remainSec);
+                      $stmt->execute();
+                      ?>
+                      <script>window.location.href=window.location.href</script>
+                      <?php } ?>
+                  <form method="POST">
+                    <input style="display:none" type="text" name="sec" value="totalSec">
+                    <?php if($break_remaining > 0){ ?>
+                      <input type="submit" value="End Break" disabled class="btn btn-danger" id="btnEnable" name="break" />
+                      <?php }else{ ?>
+                      <input type="submit" value="End Break" class="btn btn-danger" disabled name="break" />
+                    <?php }?>
+                    
+                  </form>
+                  
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+ <!-- Res Break -->
+
+<script type="text/javascript">
+    function startCount() {
+      $("#btnDisable").attr("disabled", true);
+      $("#btnEnable").attr("disabled", false);
+      var minutesLabel = document.getElementById("minutes1");
+          var secondsLabel = document.getElementById("seconds1");
+          var totalSeconds = 0;
+          setInterval(setTime, 1000);
+
+          function setTime()
+          {
+              ++totalSeconds;
+              secondsLabel.innerHTML = pad(totalSeconds%60);
+              minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+              $('input[value="totalSec"]').val(totalSeconds);
+          }
+
+          function pad(val)
+          {
+              var valString = val + "";
+              if(valString.length < 2)
+              {
+                  return "0" + valString;
+              }
+              else
+              {
+                  return valString;
+              }
+          }
+    }
+</script>  
+
+<!--Morning  Break -->
+<div class="modal fade" tabindex="-1" id="modalMorningBreak" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">Morning Break</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <center>
+              <h4>11:00 AM - 11:15 AM</h4>
+              <br>
+              <h3><label id="minutes">00</label>:<label id="seconds">00</label></h3>
+            </center>
+          </div>
+        </div>
+       
+        <br>
+        <script>
+          function startButton(){
+            $("#btnDisable2").attr("disabled", true);
+            //$("#btnEnable2").attr("disabled", false);
+            var minutesLabel = document.getElementById("minutes");
+              var secondsLabel = document.getElementById("seconds");
+              var totalSeconds = 0;
+              setInterval(setTime, 1000);
+
+              function setTime()
+              {
+                  ++totalSeconds;
+                  secondsLabel.innerHTML = pad(totalSeconds%60);
+                  minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+                  if(totalSeconds=='300'){
+                    $("#btnEnable2").attr("disabled", false);
+                  }
+              }
+
+              function pad(val)
+              {
+                  var valString = val + "";
+                  if(valString.length < 2)
+                  {
+                      return "0" + valString;
+                  }
+                  else
+                  {
+                      return valString;
+                  }
+              }
+
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            var amPM = (h > 11) ? "pm" : "am";
+            if(h > 12) {
+              h -= 12;
+            } else if(h == 0) {
+              h = "12";
+            }
+            if(m < 10) {
+              m = m;
+            }
+
+            var variable = h + ":" + m + ":" + s+amPM;
+            $('input[value="break1Start"]').val(variable);
+          }
+      </script>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="pull-right">
+                <button onclick="startButton()" id="btnDisable2" class="btn btn-success">
+                  Start Break
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="pull-left">
+                <?php
+                  if(isset($_POST['break1_end'])){
+                    $log_id=$_POST['log_id'];
+                    $break1_start=$_POST['break1_start'];
+                    $break1_end= date("h:i:sa");
+
+                    $query = $db->prepare("UPDATE logbook SET break1_start= ?, break1_end=? WHERE log_id=?");
+                    $query->bindParam(1,$_POST['break1_start']);
+                    $query->bindParam(2,$break1_end);
+                    $query->bindParam(3,$_POST['log_id']);
+                    $query->execute();
+
+                    //Query Log Details
+                    $timediff = "SELECT * FROM logbook WHERE log_id='$log_id'";
+                    $stmt2 = $db->prepare($timediff);
+                    $stmt2->execute(array('log_id' => $log_id));
+                    $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+                    $break1_start = strtotime($row['break1_start']);
+                    $break1_end = strtotime($row['break1_end']);
+
+                    $dateDiff = ($break1_end - $break1_start)/60;
+                    $stmt3 = $db->prepare("UPDATE logbook SET break1_total=? WHERE log_id=?");
+                    $stmt3->bindParam(1,$dateDiff);
+                    $stmt3->bindParam(2,$_POST['log_id']);
+                    $stmt3->execute();
+                    ?><script>window.location.href=window.location.href</script><?php
+                } ?>
+                <form method="POST">
+                    <input type="hidden" value="break1Start" name="break1_start" />
+                    <input style="display:none" value="<?php echo $_SESSION['log_id']; ?>" name="log_id" />
+                    <input type="submit" value="End Break" class="btn btn-danger" disabled id="btnEnable2" name="break1_end" />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+ <!--Morning  Break -->
+
+<!-- Lunch Break -->
+<div class="modal fade" tabindex="-1" id="modalLunchBreak" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">Lunch Break</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <center>
+              <h4>12:30 PM - 01:30 PM</h4>
+              <br>
+              <h3><label id="lminutes">00</label>:<label id="lseconds">00</label></h3>
+            </center>
+          </div>
+        </div>
+        <br>
+        <script>
+          function startButton1(){
+            $("#btnDisable3").attr("disabled", true);
+            //$("#btnEnable3").attr("disabled", false);
+            var minutesLabel = document.getElementById("lminutes");
+              var secondsLabel = document.getElementById("lseconds");
+              var totalSeconds = 0;
+              setInterval(setTime, 1000);
+
+              function setTime()
+              {
+                  ++totalSeconds;
+                  secondsLabel.innerHTML = pad(totalSeconds%60);
+                  minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+                  if(totalSeconds=='300'){
+                    $("#btnEnable3").attr("disabled", false);
+                  }
+              }
+
+              function pad(val)
+              {
+                  var valString = val + "";
+                  if(valString.length < 2)
+                  {
+                      return "0" + valString;
+                  }
+                  else
+                  {
+                      return valString;
+                  }
+              }
+
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            var amPM = (h > 11) ? "pm" : "am";
+            if(h > 12) {
+              h -= 12;
+            } else if(h == 0) {
+              h = "12";
+            }
+            /*
+            if(m < 10) {
+              m = "0" + m;
+            }
+            */
+
+            var variable = h + ":" + m + ":" + s+amPM;
+            $('input[value="out1"]').val(variable);
+          }
+      </script>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="pull-right">
+                <button onclick="startButton1()" id="btnDisable3" class="btn btn-success" id="button">
+                  Start Break
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="pull-left">
+                <?php
+                  if(isset($_POST['in2'])){
+                    $log_id= $_POST['log_id'];
+                    $out1= $_POST['out1'];
+                    $in2= date("h:i:sa");
+                    if (strtotime($out1) >= strtotime($_SESSION['log_out1'])){
+                      $log_out1 = $_SESSION['log_out1'];
+                      $stmt = $db->prepare("UPDATE logbook SET out1=?, in2=? WHERE log_id=?");
+                      $stmt->bindParam(1,$log_out1);
+                      $stmt->bindParam(2,$in2);
+                      $stmt->bindParam(3,$_POST['log_id']);
+                      $stmt->execute();
+                    }else{
+                      $stmt = $db->prepare("UPDATE logbook SET out1=?, in2=? WHERE log_id=?");
+                      $stmt->bindParam(1,$_POST['out1']);
+                      $stmt->bindParam(2,$in2);
+                      $stmt->bindParam(3,$_POST['log_id']);
+                      $stmt->execute();
+                    }
+                    
+                    //Query Log Details
+                    $timediff = "SELECT * FROM logbook WHERE log_id='$log_id'";
+                    $stmt3 = $db->prepare($timediff);
+                    $stmt3->execute(array('log_id' => $log_id));
+                    $row2 = $stmt3->fetch(PDO::FETCH_ASSOC);
+                    $in2 = $row2['in2'];
+
+                    if (strtotime($in2) <= strtotime($_SESSION['log_in2'])){
+                      $log_in2 = $_SESSION['log_in2'];
+                      $stmt = $db->prepare("UPDATE logbook SET in2= ? WHERE log_id= ?");
+                      $stmt->bindParam(1,$log_in2);
+                      $stmt->bindParam(2,$log_id);
+                      $stmt->execute();
+                    }
+                    else if (strtotime($in2) > strtotime($_SESSION['log_in2'])){
+                      $in2_late = (strtotime($in2) - strtotime($_SESSION['log_in2']))/60;
+                      $stmt = $db->prepare("UPDATE logbook SET in2_late=? WHERE log_id=?");
+                      $stmt->bindParam(1,$in2_late);
+                      $stmt->bindParam(2,$log_id);
+                      $stmt->execute();
+                    }
+                    ?><script>window.location.href=window.location.href</script><?php
+                  }
+                ?>
+                <form method="POST">
+                  <input type="hidden" value="out1" name="out1" />
+                  <input style="display:none" value="<?php echo $_SESSION['log_id']; ?>" name="log_id" />
+                  <input type="submit" value="End Break" disabled id="btnEnable3" class="btn btn-danger" name="in2" />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Lunch  Break -->
+
+<!-- Afternoon Break -->
+<div class="modal fade" tabindex="-1" id="modalAfternoonBreak" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">Afternoon Break</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <center>
+              <h4>03:30 PM - 03:45 PM</h4>
+              <br>
+              <h3><label id="aminutes">00</label>:<label id="aseconds">00</label></h3>
+            </center>
+          </div>
+        </div>
+        <br>
+        <script>
+          function startButton2(){
+            $("#btnDisable4").attr("disabled", true);
+            //$("#btnEnable4").attr("disabled", false);
+            var minutesLabel = document.getElementById("aminutes");
+              var secondsLabel = document.getElementById("aseconds");
+              var totalSeconds = 0;
+              setInterval(setTime, 1000);
+
+              function setTime()
+              {
+                  ++totalSeconds;
+                  secondsLabel.innerHTML = pad(totalSeconds%60);
+                  minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+                  if(totalSeconds=='300'){
+                    $("#btnEnable4").attr("disabled", false);
+                  }
+              }
+
+              function pad(val)
+              {
+                  var valString = val + "";
+                  if(valString.length < 2)
+                  {
+                      return "0" + valString;
+                  }
+                  else
+                  {
+                      return valString;
+                  }
+              }
+
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            var amPM = (h > 11) ? "pm" : "am";
+            if(h > 12) {
+              h -= 12;
+            } else if(h == 0) {
+              h = "12";
+            }
+            /*
+            if(m < 10) {
+              m = "0" + m;
+            }
+            */
+
+            var variable = h + ":" + m + ":" + s+amPM;
+            $('input[value="break2Start"]').val(variable);
+          }
+      </script>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="pull-right">
+                <button onclick="startButton2()" id="btnDisable4" class="btn btn-success" id="button">
+                  Start Break
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="pull-left">
+                <?php
+                  if(isset($_POST['break2_end'])){
+                    $log_id=$_POST['log_id'];
+                    $break2_start=$_POST['break2_start'];
+                    $break2_end= date("h:i:sa");
+
+                    $query = $db->prepare("UPDATE logbook SET break2_start= ?, break2_end=? WHERE log_id=?");
+                    $query->bindParam(1,$_POST['break2_start']);
+                    $query->bindParam(2,$break2_end);
+                    $query->bindParam(3,$_POST['log_id']);
+                    $query->execute();
+
+                    //Query Log Details
+                    $timediff = "SELECT * FROM logbook WHERE log_id='$log_id'";
+                    $stmt2 = $db->prepare($timediff);
+                    $stmt2->execute(array('log_id' => $log_id));
+                    $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+                    $break2_start = strtotime($row['break2_start']);
+                    $break2_end = strtotime($row['break2_end']);
+
+                    $dateDiff = ($break2_end - $break2_start)/60;
+                    $stmt3 = $db->prepare("UPDATE logbook SET break2_total=? WHERE log_id=?");
+                    $stmt3->bindParam(1,$dateDiff);
+                    $stmt3->bindParam(2,$_POST['log_id']);
+                    $stmt3->execute();
+                    ?><script>window.location.href=window.location.href</script><?php
+                } ?>
+                <form method="POST">
+                  <input type="hidden" value="break2Start" name="break2_start" />
+                  <input style="display:none" value="<?php echo $_SESSION['log_id']; ?>" name="log_id" />
+                  <input type="submit" value="End Break" class="btn btn-danger" id="btnEnable4" disabled name="break2_end" />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+ <!-- Afternoon  Break -->
+<script type="text/javascript" src="assets/notif/jquery.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      setInterval(function () {
+        $('#count_notif').load('assets/notif/data.php')
+      }, 2000);
+    });
+
+    $(document).ready(function() {
+      setInterval(function () {
+        $('#count_inbox_items').load('assets/notif/inbox_data.php')
+      }, 2000);
+    });
+
+    $(document).ready(function() {
+      setInterval(function () {
+        $('#show').load('assets/notif/dropdowndata.php')
+      }, 2000);
+    });
+    $(document).ready(function() {
+      setInterval(function () {
+        $('#task_data').load('assets/notif/task_data.php')
+      }, 2000);
+    });
+  </script>
